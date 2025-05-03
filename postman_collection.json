@@ -1,0 +1,107 @@
+{
+	"info": {
+		"_postman_id": "8567e732-e259-47f5-8293-88ec97929b44",
+		"name": "ADP Dashboard Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "40949582"
+	},
+	"item": [
+		{
+			"name": "Create Dashboard",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"created_by\": \"hr1@adp.com\",\n  \"name\": \"Payroll Snapshot - May 2025\",\n  \"headcount\": 120,\n  \"payroll_cost\": 95000,\n  \"overtime_hours\": 320\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/create",
+					"protocol": "https",
+					"host": [
+						"dz8ujeejo7",
+						"execute-api",
+						"us-east-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"dashboard",
+						"create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "View Dashboard",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/dash_58ee9d22",
+					"protocol": "https",
+					"host": [
+						"dz8ujeejo7",
+						"execute-api",
+						"us-east-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"dashboard",
+						"dash_58ee9d22"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Share Dashboard",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"shared_with\": [\"edith2744@gmail.com\"]\n}\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/share/dash_58ee9d22",
+					"protocol": "https",
+					"host": [
+						"dz8ujeejo7",
+						"execute-api",
+						"us-east-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"dashboard",
+						"share",
+						"dash_58ee9d22"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

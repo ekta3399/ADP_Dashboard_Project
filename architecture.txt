@@ -1,0 +1,38 @@
+# AWS Architecture Components for ADP HR Dashboard Project
+
+## Goal:
+Allow HR to create, view, and share dashboards with managers.
+Managers will receive email notifications when dashboards are shared.
+
+## Key AWS Services Used:
+
+1. API Gateway
+   - Entry point for all API requests (e.g. Postman, or could be frontend)
+   - Routes each request to the appropriate Lambda function
+
+2. AWS Lambda
+   - Hosts stateless backend logic for create, view, and share operations
+   - `create_dashboard.py`, `view_dashboard.py`, and `share_dashboard.py` connect to DynamoDB and SNS
+   - `email_dispatcher.py` is triggered by SNS and connects to **SendGrid** to send notification emails
+
+3. DynamoDB
+   - NoSQL database to store dashboard records
+   - Holds fields like dashboard ID, name, metrics, created_by, and shared_with list
+
+4. SNS (Simple Notification Service)
+   - Publishes messages when a dashboard is shared
+   - Triggers the `email_dispatcher.py` Lambda to handle notifications
+
+5. Lambda (`email_dispatcher.py`)
+   - Subscribed to the SNS topic
+   - Receives dashboard_id and manager emails
+   - Sends notification emails via **SendGrid** API (not via SNS or SES)
+
+6. SendGrid (External)
+   - Handles actual email delivery
+   - Scales easily for 15,000+ recipients
+   - Requires a verified sender and API key
+
+7. CloudWatch
+   - Logs all Lambda executions
+   - Useful for debugging, monitoring, and tracking email success/failure

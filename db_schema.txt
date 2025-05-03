@@ -1,0 +1,25 @@
+# DynamoDB Schema
+
+## Dashboards Table
+
+- dashboard_id (String) – Partition Key, uniquely identifies each dashboard
+- created_by (String) – Email of the HR user who created it
+- name (String) – Dashboard title
+- headcount (Number) – Number of employees
+- payroll_cost (Number) – Total payroll cost
+- overtime_hours (Number) – Total overtime hours
+- shared_with (List<String>) – List of manager emails it was shared with
+- created_at (String) – ISO timestamp of when it was created
+
+## Users Table (Optional)
+
+- user_id (String) – Partition Key (UUID or email)
+- name (String) – Full name of user
+- email (String) – Email address
+- role (String) – Either 'HR' or 'Manager'
+
+## Notes
+
+- Use UUIDs for dashboard_id and user_id for uniqueness
+- shared_with can scale for many emails, but keep DynamoDB 400KB item limit in mind
+- Users table is optional unless adding authentication
