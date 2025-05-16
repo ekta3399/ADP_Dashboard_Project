@@ -1,25 +1,59 @@
-# DynamoDB Schema
+# DynamoDB Schema – ADP HR Dashboard Project
 
-## Dashboards Table
+---
 
-- dashboard_id (String) – Partition Key, uniquely identifies each dashboard
-- created_by (String) – Email of the HR user who created it
-- name (String) – Dashboard title
-- headcount (Number) – Number of employees
-- payroll_cost (Number) – Total payroll cost
-- overtime_hours (Number) – Total overtime hours
-- shared_with (List<String>) – List of manager emails it was shared with
-- created_at (String) – ISO timestamp of when it was created
+## 1. Dashboards Table
 
-## Users Table (Optional)
+- **dashboard_id** (String) – Partition Key, uniquely identifies each dashboard
+- **created_by** (String) – Email of the HR user who created it
+- **name** (String) – Dashboard title
+- **headcount** (Number) – Number of employees
+- **payroll_cost** (Number) – Total payroll cost
+- **overtime_hours** (Number) – Total overtime hours
+- **shared_with** (List<String>) – Stores batch_id(s) instead of full email list
+- **created_at** (String) – ISO timestamp of dashboard creation
 
-- user_id (String) – Partition Key (UUID or email)
-- name (String) – Full name of user
-- email (String) – Email address
-- role (String) – Either 'HR' or 'Manager'
+🔹 **Note:** Replacing full email list with `batch_id` prevents hitting the 400KB limit for large distributions.
 
-## Notes
+---
 
-- Use UUIDs for dashboard_id and user_id for uniqueness
-- shared_with can scale for many emails, but keep DynamoDB 400KB item limit in mind
-- Users table is optional unless adding authentication
+## 2. DashboardEmailReport Table
+
+- **dashboard_id** (String) – Partition Key
+- **recipient_email** (String) – Sort Key
+- **status** (String) – 'success' or 'failed'
+- **timestamp** (String) – Time the email was attempted
+- **batch_id** (String) – Group identifier for large sends
+- **error_message** (String, Optional) – Error reason if status is 'failed'
+
+🔹 Used to generate email delivery summaries for HR practitioners.
+
+---
+
+## 3. InAppNotifications Table
+
+- **user_email** (String) – Partition Key
+- **timestamp** (String) – Sort Key (ISO timestamp)
+- **dashboard_id** (String) – Related dashboard ID
+- **message** (String) – Notification message to display in UI
+
+🔹 Stores in-app messages for managers to be shown inside a dashboard/web app.
+
+---
+
+## 4. Users Table (Optional / Future)
+
+- **user_id** (String) – Partition Key (UUID or email)
+- **name** (String) – Full name of user
+- **email** (String) – Email address
+- **role** (String) – Either 'HR' or 'Manager'
+
+🔹 Can be used later to support authentication and role-based access.
+
+---
+
+## Notes:
+
+- All tables use **on-demand capacity mode** to handle variable scale.
+- Indexing can be added as needed (e.g., GSI on batch_id if future filtering/reporting is required).
+- Use ISO 8601 timestamps for all `timestamp` fields for easy sorting and filtering.

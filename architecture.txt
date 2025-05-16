@@ -1,38 +1,62 @@
 # AWS Architecture Components for ADP HR Dashboard Project
 
 ## Goal:
-Allow HR to create, view, and share dashboards with managers.
-Managers will receive email notifications when dashboards are shared.
+Allow HR Practitioners to create, view, and share dashboards with managers.
+Managers receive multi-channel notifications (email, push, in-app) when dashboards are shared.
+Admins can view email delivery reports.
+
+---
 
 ## Key AWS Services Used:
 
-1. API Gateway
-   - Entry point for all API requests (e.g. Postman, or could be frontend)
-   - Routes each request to the appropriate Lambda function
+1. **API Gateway**
+   - Entry point for all HTTP requests (Postman or frontend)
+   - Routes requests to corresponding Lambda functions (create, view, share, report, notification)
 
-2. AWS Lambda
-   - Hosts stateless backend logic for create, view, and share operations
-   - `create_dashboard.py`, `view_dashboard.py`, and `share_dashboard.py` connect to DynamoDB and SNS
-   - `email_dispatcher.py` is triggered by SNS and connects to **SendGrid** to send notification emails
+2. **AWS Lambda**
+   - Stateless backend logic for each operation:
+     - `create_dashboard.py` → saves dashboard to DynamoDB
+     - `view_dashboard.py` → retrieves dashboard
+     - `share_dashboard.py` → breaks recipients into chunks and publishes to SNS
+     - `email_dispatcher.py` → handles notifications (email/push/in-app)
+     - `get_email_report.py` → fetches delivery logs from DynamoDB
+     - `get_in_app_notifications.py` → fetches messages per user
 
-3. DynamoDB
-   - NoSQL database to store dashboard records
-   - Holds fields like dashboard ID, name, metrics, created_by, and shared_with list
+3. **DynamoDB**
+   - Stores:
+     - Dashboard metadata (`Dashboards` table)
+     - In-app notifications (`InAppNotifications` table)
+     - Email delivery logs (`DashboardEmailReport` table)
 
-4. SNS (Simple Notification Service)
-   - Publishes messages when a dashboard is shared
-   - Triggers the `email_dispatcher.py` Lambda to handle notifications
+4. **SNS (Simple Notification Service)**
+   - Publishes share events with chunked recipient lists
+   - Triggers the `email_dispatcher.py` Lambda for async processing
 
-5. Lambda (`email_dispatcher.py`)
+5. **Lambda (`email_dispatcher.py`)**
    - Subscribed to the SNS topic
-   - Receives dashboard_id and manager emails
-   - Sends notification emails via **SendGrid** API (not via SNS or SES)
+   - Reads `dashboard_id`, `shared_with`, `channels`, and `batch_id`
+   - Sends:
+     - Emails via **SendGrid**
+     - Push (mocked for now)
+     - In-app messages stored in DynamoDB
+   - Logs status to `DashboardEmailReport` for each recipient
 
-6. SendGrid (External)
-   - Handles actual email delivery
-   - Scales easily for 15,000+ recipients
-   - Requires a verified sender and API key
+6. **SendGrid (External Service)**
+   - Delivers transactional emails
+   - Scales to 15,000+ recipients
+   - Requires API key + verified sender email
+   - Integrated via HTTPS REST API
 
-7. CloudWatch
+7. **CloudWatch**
    - Logs all Lambda executions
-   - Useful for debugging, monitoring, and tracking email success/failure
+   - Used to monitor:
+     - Email success/failure
+     - Push notification dispatch (mock logs)
+     - In-app storage activity
+
+---
+
+## Notes:
+- Recipients are shared in chunks (default 500) to avoid SNS/DynamoDB limits.
+- Only batch IDs are stored in dashboard metadata to prevent hitting item size limits.
+- Push notification is currently mocked — can be replaced with FCM or APNs.

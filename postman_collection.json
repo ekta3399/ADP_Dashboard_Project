@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "8567e732-e259-47f5-8293-88ec97929b44",
-		"name": "ADP Dashboard Project",
+		"_postman_id": "cc0f289a-070c-4570-92ab-8102e25c8b82",
+		"name": "HR Dashboard API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "40949582"
 	},
@@ -9,6 +9,9 @@
 		{
 			"name": "Create Dashboard",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [],
 				"body": {
@@ -48,7 +51,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/dash_58ee9d22",
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/dash_c8f85da8",
 					"protocol": "https",
 					"host": [
 						"dz8ujeejo7",
@@ -60,7 +63,7 @@
 					"path": [
 						"prod",
 						"dashboard",
-						"dash_58ee9d22"
+						"dash_c8f85da8"
 					]
 				}
 			},
@@ -73,10 +76,16 @@
 					"type": "noauth"
 				},
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"shared_with\": [\"edith2744@gmail.com\"]\n}\n",
+					"raw": "{\n  \"recipients\": {\n    \"emails\": [\n      \"manager1@example.com\",\n      \"manager2@example.com\",\n      \"manager3@example.com\"\n    ],\n    \"chunk_size\": 2,\n    \"batch_id\": \"batch-may2025\"\n  },\n  \"channels\": [\"email\", \"push\", \"in_app\"]\n}\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -84,7 +93,7 @@
 					}
 				},
 				"url": {
-					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/share/dash_58ee9d22",
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/share/dash_c8f85da8",
 					"protocol": "https",
 					"host": [
 						"dz8ujeejo7",
@@ -97,7 +106,85 @@
 						"prod",
 						"dashboard",
 						"share",
-						"dash_58ee9d22"
+						"dash_c8f85da8"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Email Report",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/report?dashboard_id=dash_c8f85da8",
+					"protocol": "https",
+					"host": [
+						"dz8ujeejo7",
+						"execute-api",
+						"us-east-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"dashboard",
+						"report"
+					],
+					"query": [
+						{
+							"key": "dashboard_id",
+							"value": "dash_c8f85da8"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get In-App Notifications",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://dz8ujeejo7.execute-api.us-east-2.amazonaws.com/prod/dashboard/notifications?user_email=manager1@example.com",
+					"protocol": "https",
+					"host": [
+						"dz8ujeejo7",
+						"execute-api",
+						"us-east-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"prod",
+						"dashboard",
+						"notifications"
+					],
+					"query": [
+						{
+							"key": "user_email",
+							"value": "manager1@example.com"
+						}
 					]
 				}
 			},
